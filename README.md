@@ -20,3 +20,11 @@ https://github.com/hishis/forum-grandmaster-for-discuz
    c. 把作者名字放到了有栏顶栏，这样就是谁-什么时间发表的。
    d. 自动翻页，不断获取下一页帖子，毕竟默认15贴一页，我浏览100页，点死人了的下一页。但是页数索引不更更新，你要自己算，翻到那一页了，点击下一页，可能是很久以前的了。
    
+## Copyright
+
+Original work © Forum Grandmaster for Discuz! contributors  
+https://github.com/hishis/forum-grandmaster-for-discuz
+
+Modifications © 2024–2026 qingyubest
+
+Licensed under the Mozilla Public License 2.0 (MPL-2.0).
