@@ -125,6 +125,14 @@
  *
  * == END LICENSE BLOCK ==
  *
+ *
+ *
+ * Modifications Copyright (c) 2024–2026 qingyubest
+ *
+ * This file contains modifications by qingyubest.
+ * The modifications are also licensed under MPL 2.0.
+ *
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
  *
