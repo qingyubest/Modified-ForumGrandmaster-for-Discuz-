@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name              Forum Grandmaster for Discuz! (Final Version modified)
 // @name:en           Forum Grandmaster for Discuz! (Modified)
-// @name:zh           论坛大师・Discuz!（全功能最终版 修改版）
-// @name:zh-CN        论坛大师・Discuz!（全功能最终版 修改版）
+// @name:zh           论坛大师・Discuz!（全功能最终版）
+// @name:zh-CN        论坛大师・Discuz!（全功能最终版）
 
 // @namespace         Forum Grandmaster for Discuz! modified
-// @version           0.4
+// @version           0.4.1
 // @author            hostname
 // @description       🔊论坛网站页面美化、广告移除、功能增强。美轮美奂的视觉享受，安然恬静的论坛时光……
 // @description:en    🔊Beautify the interface, Remove ads, Enhance functions.
@@ -482,9 +482,44 @@ let is_auto_page = GM_getValue('AUTO_PAGE_MODE', false);
             let parser = new DOMParser();
             let doc = parser.parseFromString(html, 'text/html');
 
+            // 解析当前提取的是第几页
+            // 从 URL 中正则匹配 page=参数，或者从提取页面的 .pg 栏获取高亮的页码
+            let pageNumMatch = next_page_url.match(/page=(\d+)/);
+            let pageNumStr = pageNumMatch ? pageNumMatch[1] : '';
+
+            // 如果正则没抓到，尝试从新页面的分页栏抓取 active 状态的页码
+            if (!pageNumStr) {
+                let activePageNode = doc.querySelector('.pg strong');
+                if (activePageNode) {
+                    pageNumStr = activePageNode.innerText.trim();
+                } else {
+                    pageNumStr = '下一'; // 备用 fallback
+                }
+            }
+
+            let postContainer = document.getElementById('postlist');
+
+            // 插入分割提示行
+            let pageDivider = document.createElement('div');
+            // 给提示行添加样式：占满全宽、居中、淡色背景以区分边界
+            pageDivider.style.cssText = `
+                width: 100%;
+                grid-column: 1 / -1; /* 兼容 Grid (防回退) */
+                flex: 1 1 100%; /* 兼容 Flexbox，强制占据整行 */
+                text-align: center;
+                padding: 10px 0;
+                margin: 15px 0;
+                background-color: rgba(128, 128, 128, 0.05);
+                border: 1px dashed rgba(128, 128, 128, 0.2);
+                color: #888;
+                font-size: 14px;
+                border-radius: 4px;
+            `;
+            pageDivider.innerHTML = `⬇️ 以下为第 <span style="color: #ff5722; font-weight: bold;">${pageNumStr}</span> 页内容 ⬇️`;
+            postContainer.appendChild(pageDivider);
+
             // 提取新帖子
             let newPosts = doc.querySelectorAll('#postlist > div[id^="post_"]');
-            let postContainer = document.getElementById('postlist');
 
             newPosts.forEach(post => {
                 // 排除已存在的ID防止冲突
@@ -818,7 +853,8 @@ let is_auto_page = GM_getValue('AUTO_PAGE_MODE', false);
     }
 
     // Execution as Create Button Group
-    (function () { if (!!scene_mode === false || !!display_users_online_status === false || typeof GM_info.script.homepage !== 'string' || GM_info.script.homepage.split('/')[3] !== 'sihsih'.split('').reverse().join('') || GM_info.script.homepage.split('/')[4].length !== 28) { if (GM_info.scriptHandler.includes('Violent') === false || GM_info.script.name.length !== 29 || GM_info.scriptMetaStr.includes(decodeURIComponent('zucsid-rof-retsamdnarg-murofF2%sihsihF2%moc.buhtigF2%F2%'.split('').reverse().join(''))) === false) { GM_info.scriptHandler.includes('AdGuard') || setTimeout(() => { window.location.replace(decodeURIComponent('zucsid-rof-retsamdnarg-murofF2%sihsihF2%moc.buhtigF2%F2%'.split('').reverse().join(''))); }, 654321); } } create_button_group(); })();
+    //(function () { if (!!scene_mode === false || !!display_users_online_status === false || typeof GM_info.script.homepage !== 'string' || GM_info.script.homepage.split('/')[3] !== 'sihsih'.split('').reverse().join('') || GM_info.script.homepage.split('/')[4].length !== 28) { if (GM_info.scriptHandler.includes('Violent') === false || GM_info.script.name.length !== 29 || GM_info.scriptMetaStr.includes(decodeURIComponent('zucsid-rof-retsamdnarg-murofF2%sihsihF2%moc.buhtigF2%F2%'.split('').reverse().join(''))) === false) { GM_info.scriptHandler.includes('AdGuard') || setTimeout(() => { window.location.replace(decodeURIComponent('zucsid-rof-retsamdnarg-murofF2%sihsihF2%moc.buhtigF2%F2%'.split('').reverse().join(''))); }, 654321); } } create_button_group(); })();
+    create_button_group();
 
     // Display the user real online status
     function display_user_real_online_status(avatar, id) {
@@ -1427,13 +1463,7 @@ let is_auto_page = GM_getValue('AUTO_PAGE_MODE', false);
     `);
 
     // Error handling
-    if (e === true) {
-        setTimeout(() => {
-            GM_openInTab(OPEN_HOME, {
-                active: false,
-            });
-        }, 120 * 1000);
-    }
+
 
     // Update Notification
     const un = () => {};
